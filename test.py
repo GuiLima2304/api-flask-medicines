@@ -2,7 +2,8 @@
 
 import re
 import sys
-import mechanize 
+import mechanize
+from xml.etree.ElementTree import XML, fromstring
 
 from mechanize import Browser
 from bs4 import BeautifulSoup
@@ -14,17 +15,34 @@ def printTopicos(topicos):
         print(t)
 
 
+def printTextos(topico):
+
+    bulas = ''
+    topicoEspecial = []
+    cont = 0
+
+    for ch in bula:
+        bulas += bula[ch]
+
+        if(ch):
+            # topicoEspecial.insert(cont, ch)
+            
+            topicoEspecial.append({'title':ch, 'description':bula[ch]})
+            print(cont)
+            cont += 1
+
+# score_titles = [{"Title": t, "Score": s} for t, s in zip(titles, scores)]
+    print('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
+    print(topicoEspecial)
+    
+    return topicoEspecial
+
+       
 # def printTextos(topico):
 #     for ch in bula:
-#         print(ch + '\n#' + bula[ch] + '\n\n')
 #         if(ch == 'Interações medicamentosas'):
-#             print('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHHHHHH')
-
-def printTextos(topico):
-    for ch in bula:
-        if(ch == 'Interações medicamentosas'):
-            print(ch + '\n#' + bula[ch] + '\n\n')
-            return bula[ch]
+#             print(ch + '\n#' + bula[ch] + '\n\n')
+#             return bula[ch]
 
 site = 'https://bulas.medicamentos.app/medicamentos'
 # medicamento = ''
@@ -65,11 +83,11 @@ def teste(drug1):
 
     soup = BeautifulSoup(page, 'html.parser')
 
-    # tagsH4 = soup.findAll('h4')
-    # topicos = list(map(lambda s: re.sub('</?h4>', '', str(s)), tagsH4))
+    tagsH4 = soup.findAll('h4')
+    topicos = list(map(lambda s: re.sub('</?h4>', '', str(s)), tagsH4))
 
-    tagsStrong = soup.findAll('strong')
-    topicos = list(map(lambda s: re.sub('</?strong>', '', str(s)), tagsStrong))
+    # tagsStrong = soup.findAll('strong')
+    # topicos = list(map(lambda s: re.sub('</?strong>', '', str(s)), tagsStrong))
 
 
 

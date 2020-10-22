@@ -1,15 +1,22 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, Response
 from flask_restful import Resource, Api
 from sqlalchemy import create_engine
 from json import dumps
 from flask_cors import CORS
 import test
 
+
 db_connect_drugs = create_engine('sqlite:///medicines.db')
+listMedicamentos = []
 
 app = Flask(__name__)
 api = Api(app)
 CORS(app)
+
+@app.route('/ajax_ddl')
+def ajax_ddl(text):
+    xml = text
+    return Response(xml, mimetype='text/xml')
 
 
 class Medicamentos(Resource):
@@ -27,12 +34,21 @@ class Medicamentos(Resource):
         resultadoMedicamento1 = test.teste(primary_drug)
         resultadoMedicamento2 = test.teste(second_drug)
 
+        listMedicamentos.clear()
+        listMedicamentos.append(resultadoMedicamento1)
+        listMedicamentos.append(resultadoMedicamento2)
+
+        # resultadoMedXML = ajax_ddl(resultadoMedicamento1)
+        # resultadoMedXML2 = ajax_ddl(resultadoMedicamento2)
+
+
         conn.execute(
             "insert into drugs values(null, '{0}','{1}')".format(primary_drug, second_drug))
 
         query = conn.execute('select * from drugs order by id desc limit 1')
         result = [dict(zip(tuple(query.keys()), i)) for i in query.cursor]
-        return jsonify(resultadoMedicamento1, resultadoMedicamento2)
+
+        return jsonify(listMedicamentos)
 
 api.add_resource(Medicamentos, '/medicines')
 
