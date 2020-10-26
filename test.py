@@ -12,13 +12,13 @@ from urllib.request import urlopen
 
 def printTopicos(topicos):
     for t in topicos:
-        print(t)
+        # print(t)
 
 
 def printTextos(topico):
 
     bulas = ''
-    topicoEspecial = []
+    topicoEspecial = {}
     cont = 0
 
     for ch in bula:
@@ -27,13 +27,15 @@ def printTextos(topico):
         if(ch):
             # topicoEspecial.insert(cont, ch)
             
-            topicoEspecial.append({'title':ch, 'description':bula[ch]})
-            print(cont)
+            # topicoEspecial.append({"teste": {'title':ch, 'description':bula[ch]}})
+
+            topicoEspecial['medicamento'].append({'title':ch, 'description':bula[ch]})
+            # print(cont)
             cont += 1
 
 # score_titles = [{"Title": t, "Score": s} for t, s in zip(titles, scores)]
-    print('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
-    print(topicoEspecial)
+    # print('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
+    # print(topicoEspecial)
     
     return topicoEspecial
 
@@ -50,7 +52,7 @@ bula = {}
 
 def startMedicamentos(drug1):
     medicamento = drug1
-    print(medicamento)
+    # print(medicamento)
 
 
 def teste(drug1):
@@ -64,7 +66,7 @@ def teste(drug1):
     br.form = list(br.forms())[0]
 
     br['termo'] = medicamento
-    print(medicamento)
+    # print(medicamento)
 
     page = br.submit()
     page = page.read()
