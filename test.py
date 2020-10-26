@@ -4,6 +4,7 @@ import re
 import sys
 import mechanize
 from xml.etree.ElementTree import XML, fromstring
+import json
 
 from mechanize import Browser
 from bs4 import BeautifulSoup
@@ -17,24 +18,27 @@ def printTopicos(topicos):
 
 def printTextos(topico):
 
-    bulas = ''
-    topicoEspecial = []
+    bulas = ''   
     cont = 0
+
+    topicoEspecial = {}
+    topicoEspecial['teste'] = []
 
     for ch in bula:
         bulas += bula[ch]
 
-        if(ch):
-            # topicoEspecial.insert(cont, ch)
-            
-            topicoEspecial.append({'title':ch, 'description':bula[ch]})
-            print(cont)
+        if(ch):            
+            topicoEspecial['teste'].append(
+                {
+                    'title':ch, 
+                    'description':bula[ch]
+                }
+            )
+            print('\n\n')
+            print(topicoEspecial)
+            print('\n\n')
             cont += 1
 
-# score_titles = [{"Title": t, "Score": s} for t, s in zip(titles, scores)]
-    print('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
-    print(topicoEspecial)
-    
     return topicoEspecial
 
        
