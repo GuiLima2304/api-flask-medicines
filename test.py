@@ -16,15 +16,15 @@ def printTopicos(topicos):
         print(t)
 
 def printFarmacologia(content):
-
+    farmacologia.clear()
     pa_ini = content.find("Princípios Ativos")
     gf_ini = content.find("Grupos Farmacológicos")
     it_ini = content.find("Indicações Terapêuticas")
     it_fim = content.find("\n\n\n\n\nLaboratório")
 
-    farmacologia["Princípios Ativos"] = content[pa_ini + len("Princípios Ativos\n\n\n"):gf_ini-len("\n\n\n")]
-    farmacologia["Grupos Farmacológicos"] = content[gf_ini + len("Grupos Farmacológicos\n\n\n"):it_ini-len("\n\n\n")]
-    farmacologia["Indicações Terapêuticas"] = content[it_ini + len("Indicações Terapêuticas\n\n\n"):it_fim]
+    farmacologia["principios-ativos"] = content[pa_ini + len("Princípios Ativos\n\n\n"):gf_ini-len("\n\n\n")]
+    farmacologia["grupos-farmacologicos"] = content[gf_ini + len("Grupos Farmacológicos\n\n\n"):it_ini-len("\n\n\n")]
+    farmacologia["indicacoes-terapeuticas"] = content[it_ini + len("Indicações Terapêuticas\n\n\n"):it_fim]
     print('\n\n')
     print('----------------------------------------------------FARMACOLOGIA--------------------------------------------------')
     print(farmacologia)
@@ -36,7 +36,8 @@ def printTextos(topico):
 
     topicoEspecial = {}
     topicoEspecial['bula'] = []
-    farma = {}
+
+    print(farmacologia)
 
     for ch in bula:
         bulas += bula[ch]
@@ -47,13 +48,20 @@ def printTextos(topico):
                 'description':bula[ch]
             },
         ),
+        topicoEspecial['farmacologia'] = farmacologia,
+        topicoEspecial['interacao'] = interacoes
 
 
-        print('\n\n')
-        print(topicoEspecial)
-        print('\n\n')
+        # print('\n\n')
+        # print(topicoEspecial)
+        # print('\n\n')
         cont += 1
 
+    # topicoEspecial['farmaco'].append(
+    #     {
+    #         'farmaco':farmacologia
+    #     }
+    # )
     return topicoEspecial
 
        
@@ -67,6 +75,7 @@ site = 'https://bulas.medicamentos.app/medicamentos'
 # medicamento = ''
 bula = {}
 farmacologia = {}
+interacoes = {}
 
 
 def startMedicamentos(drug1):
