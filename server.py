@@ -38,10 +38,6 @@ class Medicamentos(Resource):
         listMedicamentos.append(resultadoMedicamento1)
         listMedicamentos.append(resultadoMedicamento2)
 
-        # resultadoMedXML = ajax_ddl(resultadoMedicamento1)
-        # resultadoMedXML2 = ajax_ddl(resultadoMedicamento2)
-
-
         conn.execute(
             "insert into drugs values(null, '{0}','{1}')".format(primary_drug, second_drug))
 
