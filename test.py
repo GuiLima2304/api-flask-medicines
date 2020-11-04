@@ -5,6 +5,7 @@ import sys
 import mechanize
 from xml.etree.ElementTree import XML, fromstring
 import json
+import os
 
 from mechanize import Browser
 from bs4 import BeautifulSoup
@@ -22,12 +23,21 @@ def printFarmacologia(content):
     it_ini = content.find("Indicações Terapêuticas")
     it_fim = content.find("\n\n\n\n\nLaboratório")
 
-    farmacologia["principios-ativos"] = content[pa_ini + len("Princípios Ativos\n\n\n"):gf_ini-len("\n\n\n")]
-    farmacologia["grupos-farmacologicos"] = content[gf_ini + len("Grupos Farmacológicos\n\n\n"):it_ini-len("\n\n\n")]
-    farmacologia["indicacoes-terapeuticas"] = content[it_ini + len("Indicações Terapêuticas\n\n\n"):it_fim]
+    farmacologia["Principios Ativos"] = content[pa_ini + len("Princípios Ativos\n\n\n"):gf_ini-len("\n\n\n")]
+    farmacologia["Grupos Farmacologicos"] = content[gf_ini + len("Grupos Farmacológicos\n\n\n"):it_ini-len("\n\n\n")]
+    farmacologia["Indicacoes Terapeuticas"] = content[it_ini + len("Indicações Terapêuticas\n\n\n"):it_fim]
     print('\n\n')
     print('----------------------------------------------------FARMACOLOGIA--------------------------------------------------')
     print(farmacologia)
+
+def printInteracoes(interacoes):
+    interacoes_pos = interacoes.find("Interações medicamentosas")
+    interacoes = interacoes[interacoes_pos + len("Interações medicamentosas\n"):]
+    interacoes = interacoes.strip()
+    interacoesIsolada = interacoes
+    print('INTERACOES ISOLADAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
+    print(interacoesIsolada)
+    return interacoesIsolada
 
 def printTextos(topico):
 
@@ -49,13 +59,14 @@ def printTextos(topico):
             },
         ),
         topicoEspecial['farmacologia'] = farmacologia,
-        topicoEspecial['interacao'] = interacoes
+    
+    topicoEspecial['interacao'] = { 'teste':interacoesIsolada }
 
 
         # print('\n\n')
         # print(topicoEspecial)
         # print('\n\n')
-        cont += 1
+        # cont += 1
 
     # topicoEspecial['farmaco'].append(
     #     {
@@ -75,7 +86,7 @@ site = 'https://bulas.medicamentos.app/medicamentos'
 # medicamento = ''
 bula = {}
 farmacologia = {}
-interacoes = {}
+interacoesIsolada = ''
 
 
 def startMedicamentos(drug1):
@@ -116,11 +127,6 @@ def teste(drug1):
     tagsH4 = soup.findAll('h4')
     topicos = list(map(lambda s: re.sub('</?h4>', '', str(s)), tagsH4))
 
-    # tagsStrong = soup.findAll('strong')
-    # topicos = list(map(lambda s: re.sub('</?strong>', '', str(s)), tagsStrong))
-
-
-
     content = soup.getText()
 
     printFarmacologia(content)
@@ -135,20 +141,44 @@ def teste(drug1):
     bula[topicos[-1]] = re.sub('\\\\n', '\\n', bula[topicos[-1]])
     bula[topicos[-1]] = re.sub('\\n\\n', '', bula[topicos[-1]])
 
+
     interacoes = bula[topicos[2]]
     interacoes_pos = interacoes.find("Interações medicamentosas")
+    # printInteracoes(interacoes)
     interacoes = interacoes[interacoes_pos + len("Interações medicamentosas\n"):]
     interacoes = interacoes.strip()
 
     print('\n\n')
     print('----------------------------------------------------INTERACOES--------------------------------------------------')
     print(interacoes)
-    # bula[topicos[-1]] = content[fim + len(topicos[-1]):]
-    # bula[topicos[-1]] = re.sub('"\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"Gostaria.*', '', bula[topicos[-1]])
+    bula[topicos[-1]] = content[fim + len(topicos[-1]):]
+    bula[topicos[-1]] = re.sub('"\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"Gostaria.*', '', bula[topicos[-1]])
 
-    resultado  = printTextos(bula)
+    with open(medicamento+'.json', 'w') as fout:
+        fout.write('{\n')
+        fout.write('    "titulo" : "' + medicamento + '",\n')
+        fout.write('    "Interações medicamentosas" : "' + interacoes.strip().replace("\n", "\\n") + '",\n')
 
-    return resultado
+        for topico in farmacologia:
+            fout.write('    "' + topico + '" : "' + farmacologia[topico].strip().replace("\n", "\\n") + '",\n')
+
+        for topico in bula:
+            if topico.find("quantidade maior do que a indicada") != -1:
+                fout.write('    "' + topico + '" : "' + bula[topico].strip().replace("\n", "\\n") + '"\n')
+            else:
+                fout.write('    "' + topico + '" : "' + bula[topico].strip().replace("\n", "\\n") + '",\n')
+
+        fout.write('}')
+
+    with open(medicamento + '.json', 'r') as reader:
+        data = json.loads(reader.read())
+
+    os.remove(medicamento + '.json')
+    print(data)
+
+    # resultado  = printTextos(bula)
+
+    return data
 
 
 
