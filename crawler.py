@@ -12,11 +12,7 @@ from bs4 import BeautifulSoup
 from urllib.request import urlopen
 
 
-def printTopicos(topicos):
-    for t in topicos:
-        print(t)
-
-def printFarmacologia(content):
+def GetFarmacologia(content):
     farmacologia.clear()
     pa_ini = content.find("Princípios Ativos")
     gf_ini = content.find("Grupos Farmacológicos")
@@ -26,76 +22,15 @@ def printFarmacologia(content):
     farmacologia["Principios Ativos"] = content[pa_ini + len("Princípios Ativos\n\n\n"):gf_ini-len("\n\n\n")]
     farmacologia["Grupos Farmacologicos"] = content[gf_ini + len("Grupos Farmacológicos\n\n\n"):it_ini-len("\n\n\n")]
     farmacologia["Indicacoes Terapeuticas"] = content[it_ini + len("Indicações Terapêuticas\n\n\n"):it_fim]
-    print('\n\n')
-    print('----------------------------------------------------FARMACOLOGIA--------------------------------------------------')
-    print(farmacologia)
 
-def printInteracoes(interacoes):
-    interacoes_pos = interacoes.find("Interações medicamentosas")
-    interacoes = interacoes[interacoes_pos + len("Interações medicamentosas\n"):]
-    interacoes = interacoes.strip()
-    interacoesIsolada = interacoes
-    print('INTERACOES ISOLADAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
-    print(interacoesIsolada)
-    return interacoesIsolada
-
-def printTextos(topico):
-
-    bulas = ''   
-    cont = 0
-
-    topicoEspecial = {}
-    topicoEspecial['bula'] = []
-
-    print(farmacologia)
-
-    for ch in bula:
-        bulas += bula[ch]
-
-        topicoEspecial['bula'].append(
-            {
-                'title':ch, 
-                'description':bula[ch]
-            },
-        ),
-        topicoEspecial['farmacologia'] = farmacologia,
-    
-    topicoEspecial['interacao'] = { 'teste':interacoesIsolada }
-
-
-        # print('\n\n')
-        # print(topicoEspecial)
-        # print('\n\n')
-        # cont += 1
-
-    # topicoEspecial['farmaco'].append(
-    #     {
-    #         'farmaco':farmacologia
-    #     }
-    # )
-    return topicoEspecial
-
-       
-# def printTextos(topico):
-#     for ch in bula:
-#         if(ch == 'Interações medicamentosas'):
-#             print(ch + '\n#' + bula[ch] + '\n\n')
-#             return bula[ch]
 
 site = 'https://bulas.medicamentos.app/medicamentos'
-# medicamento = ''
 bula = {}
 farmacologia = {}
 interacoesIsolada = ''
 
-
-def startMedicamentos(drug1):
-    medicamento = drug1
-    # print(medicamento)
-
-
-def teste(drug1):
-    medicamento = drug1
+def GetBula(drug):
+    medicamento = drug
 
     br = Browser()
     br.set_handle_robots(False)
@@ -105,7 +40,6 @@ def teste(drug1):
     br.form = list(br.forms())[0]
 
     br['termo'] = medicamento
-    # print(medicamento)
 
     page = br.submit()
     page = page.read()
@@ -129,7 +63,7 @@ def teste(drug1):
 
     content = soup.getText()
 
-    printFarmacologia(content)
+    GetFarmacologia(content)
 
     for i in range(len(topicos) - 1):
         ini = content.find(topicos[i])
@@ -144,13 +78,9 @@ def teste(drug1):
 
     interacoes = bula[topicos[2]]
     interacoes_pos = interacoes.find("Interações medicamentosas")
-    # printInteracoes(interacoes)
     interacoes = interacoes[interacoes_pos + len("Interações medicamentosas\n"):]
     interacoes = interacoes.strip()
 
-    print('\n\n')
-    print('----------------------------------------------------INTERACOES--------------------------------------------------')
-    print(interacoes)
     bula[topicos[-1]] = content[fim + len(topicos[-1]):]
     bula[topicos[-1]] = re.sub('"\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"Gostaria.*', '', bula[topicos[-1]])
 
@@ -174,14 +104,6 @@ def teste(drug1):
         data = json.loads(reader.read())
 
     os.remove(medicamento + '.json')
-    print(data)
-
-    # resultado  = printTextos(bula)
 
     return data
 
-
-
-# printTopicos(topicos)
-# print('\n\n')
-# printTextos(bula)
